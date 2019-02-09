@@ -21,8 +21,8 @@ class BattleControllerTest extends ApiTestCase
         ], 'weaverryan');
 
         $data = [
-            'project' => $project->getId(),
-            'programmer' => $programmer->getId()
+            'projectId' => $project->getId(),
+            'programmerId' => $programmer->getId()
         ];
 
         $response = $this->client->post('/api/battles', [
@@ -32,8 +32,35 @@ class BattleControllerTest extends ApiTestCase
 
         $this->assertEquals(201, $response->getStatusCode());
         $this->asserter()->assertResponsePropertyExists($response, 'didProgrammerWin');
+        $this->asserter()->assertResponsePropertyEquals($response, 'project', $project->getId());
+        $this->asserter()->assertResponsePropertyEquals($response, 'programmer', 'Fred');
         $this->debugResponse($response);
         //todo later
         //$this->assertTrue($response->hasHeader('Location'));
+    }
+
+    public function testPOSTBattleValidationErrors()
+    {
+        $programmer = $this->createProgrammer([
+            'nickname' => 'Fred'
+        ], 'weaverryan');
+
+        $data = [
+            'projectId' => null,
+            'programmerId' => $programmer->getId()
+        ];
+
+        $response = $this->client->post('/api/battles', [
+            'body' => json_encode($data),
+            'headers' => $this->getAuthorizedHeaders('weaverryan')
+        ]);
+
+        $this->assertEquals(400, $response->getStatusCode());
+        $this->asserter()->assertResponsePropertyExists($response, 'errors.projectId');
+        $this->asserter()->assertResponsePropertyEquals(
+            $response,
+            'errors.projectId[0]',
+            'This value should not be blank.'
+        );
     }
 }
