@@ -37,4 +37,11 @@ class ProgrammerRepository extends EntityRepository
 
         return $qb;
     }
+
+    public function createQueryBuilderForUser(User $user)
+    {
+        return $this->createQueryBuilder('p')
+            ->andWhere('p.user = :user')
+            ->setParameter('user', $user);
+    }
 }
