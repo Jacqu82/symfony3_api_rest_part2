@@ -167,4 +167,30 @@ class ProgrammerController extends BaseController
 
         return $this->createApiResponse($collection);
     }
+
+    /**
+     * @Route("/api/programmers/{nickname}/tagline")
+     * @Method("PUT")
+     */
+    public function editTagLineAction(Programmer $programmer, Request $request)
+    {
+        $programmer->setTagLine($request->getContent());
+        $em = $this->getDoctrine()->getManager();
+        $em->flush();
+
+        return new Response($programmer->getTagLine(), 200, [
+            'Content-Type' => 'text/plain'
+        ]);
+    }
+
+    /**
+     * @Route("/api/programmers/{nickname}/powerup")
+     * @Method("POST")
+     */
+    public function powerUpAction(Programmer $programmer)
+    {
+        $this->get('battle.power_manager')->powerUp($programmer);
+
+        return $this->createApiResponse($programmer);
+    }
 }
