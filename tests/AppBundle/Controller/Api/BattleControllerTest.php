@@ -36,8 +36,13 @@ class BattleControllerTest extends ApiTestCase
         $this->asserter()->assertResponsePropertyEquals($response, 'programmer', 'Fred');
         $this->asserter()->assertResponsePropertyEquals(
           $response,
-          '_links.programmer.href',
+          '_links.programmer',
             $this->adjustUri('/api/programmers/Fred')
+        );
+        $this->asserter()->assertResponsePropertyEquals(
+            $response,
+            '_embedded.programmer.nickname',
+            'Fred'
         );
         $this->debugResponse($response);
         //todo later
@@ -73,6 +78,6 @@ class BattleControllerTest extends ApiTestCase
             'errors.programmerId[0]',
             'This value is not valid.'
         );
-        $this->debugResponse($response);
+        //$this->debugResponse($response);
     }
 }

@@ -17,6 +17,7 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *              "api_programmers_show",
  *              parameters = { "nickname" = "expr(object.getProgrammerNickname())" }
  *      ),
+ *     embedded="expr(object.getProgrammer())"
  * )
  */
 class Battle
