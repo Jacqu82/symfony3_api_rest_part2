@@ -15,9 +15,8 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      "programmer",
  *      href = @Hateoas\Route(
  *              "api_programmers_show",
- *              parameters = { "nickname" = "expr(object.getProgrammerNickname())" }
- *      ),
- *     embedded="expr(object.getProgrammer())"
+ *              parameters = {"nickname" = "expr(object.getProgrammerNickname())"}
+ *      )
  * )
  */
 class Battle
@@ -33,6 +32,7 @@ class Battle
     /**
      * @ORM\ManyToOne(targetEntity="Programmer")
      * @ORM\JoinColumn(nullable=false)
+     * @Serializer\Expose()
      */
     private $programmer;
 
@@ -120,10 +120,6 @@ class Battle
         return $this->notes;
     }
 
-    /**
-     * @Serializer\VirtualProperty()
-     * @Serializer\SerializedName("programmer")
-     */
     public function getProgrammerNickname()
     {
         return $this->programmer->getNickname();

@@ -18,7 +18,14 @@ use Hateoas\Configuration\Annotation as Hateoas;
  *      "self",
  *      href = @Hateoas\Route(
  *              "api_programmers_show",
- *              parameters = { "nickname" = "expr(object.getNickname())" }
+ *              parameters = {"nickname" = "expr(object.getNickname())"}
+ *      ),
+ * )
+ * @Hateoas\Relation(
+ *      "battles",
+ *      href = @Hateoas\Route(
+ *              "api_programmers_battles_list",
+ *              parameters = {"nickname" = "expr(object.getNickname())"}
  *      ),
  * )
  */

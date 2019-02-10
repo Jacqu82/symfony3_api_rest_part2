@@ -5,9 +5,11 @@ namespace AppBundle\Controller\Api;
 use AppBundle\Api\ApiProblem;
 use AppBundle\Api\ApiProblemException;
 use AppBundle\Controller\BaseController;
+use AppBundle\Entity\Battle;
 use AppBundle\Entity\Programmer;
 use AppBundle\Form\ProgrammerType;
 use AppBundle\Form\UpdateProgrammerType;
+use AppBundle\Pagination\PaginatedCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -146,5 +148,23 @@ class ProgrammerController extends BaseController
         }
 
         return new Response(null, 204);
+    }
+
+    /**
+     * @Route("/api/programmers/{nickname}/battles", name="api_programmers_battles_list")
+     */
+    public function battlesListAction(Programmer $programmer, Request $request)
+    {
+        $qb = $this->getDoctrine()->getRepository(Battle::class)
+            ->createQueryBuilderForProgrammer($programmer);
+
+        $collection = $this->get('pagination_factory')->createCollection(
+            $qb,
+            $request,
+            'api_programmers_battles_list',
+            ['nickname' => $programmer->getNickname()]
+        );
+
+        return $this->createApiResponse($collection);
     }
 }

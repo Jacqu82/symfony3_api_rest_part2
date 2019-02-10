@@ -2,6 +2,7 @@
 
 namespace Tests\AppBundle\Controller\Api;
 
+use AppBundle\Battle\BattleManager;
 use AppBundle\Test\ApiTestCase;
 
 class ProgrammerControllerTest extends ApiTestCase
@@ -29,7 +30,7 @@ class ProgrammerControllerTest extends ApiTestCase
 
         $this->assertEquals(201, $response->getStatusCode());
         $this->assertTrue($response->hasHeader('Location'));
-        $this->assertEquals('application/hal+json', $response->getHeader('Content-Type')[0]);
+        $this->assertEquals('application/vnd.codebattles+json', $response->getHeader('Content-Type')[0]);
         $this->assertStringEndsWith('/api/programmers/ObjectOrienter', $response->getHeader('Location')[0]);
         $finishedData = json_decode($response->getBody(true), true);
         $this->assertArrayHasKey('nickname', $finishedData);
@@ -59,6 +60,31 @@ class ProgrammerControllerTest extends ApiTestCase
             '_links.self',
             $this->adjustUri('/api/programmers/UnitTester')
         );
+        $this->debugResponse($response);
+    }
+
+    public function testFollowProgrammerBattlesLink()
+    {
+        $programmer = $this->createProgrammer(array(
+            'nickname' => 'UnitTester',
+            'avatarNumber' => 3,
+        ));
+        $project = $this->createProject('cool_project');
+
+        /** @var BattleManager $battleManager */
+        $battleManager = $this->getService('battle.battle_manager');
+        $battleManager->battle($programmer, $project);
+        $battleManager->battle($programmer, $project);
+        $battleManager->battle($programmer, $project);
+
+        $response = $this->client->get('/api/programmers/UnitTester', [
+            'headers' => $this->getAuthorizedHeaders('weaverryan')
+        ]);
+        $uri = $this->asserter()->readResponseProperty($response, '_links.battles');
+        $response = $this->client->get($uri, [
+            'headers' => $this->getAuthorizedHeaders('weaverryan')
+        ]);
+        $this->asserter()->assertResponsePropertyExists($response, 'items');
         $this->debugResponse($response);
     }
 
